@@ -4,12 +4,12 @@ from pygame.draw import *
 pygame.init()
 
 FPS = 30
-screen = pygame.display.set_mode((1030, 760))
+screen = pygame.display.set_mode((1032, 768))
 
 """Фон
 Небо, земля"""
-rect(screen, (170, 238, 255), (0, 0, 1030, 380))
-rect(screen, (55, 200, 113), (0, 380, 1030, 380))
+rect(screen, (170, 238, 255), (0, 0, 1032, 384))
+rect(screen, (55, 200, 113), (0, 380, 1032, 384))
 
 """чувак
 Туловище,голова, руки, ноги, ступни"""
