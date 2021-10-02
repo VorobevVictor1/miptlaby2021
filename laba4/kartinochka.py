@@ -7,6 +7,8 @@ FPS = 30
 screen = pygame.display.set_mode((1032, 768))
 
 """Во всех фунцкиях х и у --- начальная точка, аналог х0 и у0"""
+
+
 def chuvak(x, y, orientacia):
     """чувак
         Туловище,голова, руки, ноги, ступни"""
@@ -18,10 +20,13 @@ def chuvak(x, y, orientacia):
     else:
         koef_orientacii = -1
         ko = koef_orientacii
+
     def dy(y1):
-            return int((y1 - y0) / 2)
+        return int((y1 - y0) / 2)
+
     def dx(x1):
         return int(ko * (x1 - x0) / 2)
+
     ellipse(screen, (167, 147, 172), (x + dx(255), y + dy(230), ko * 150 // 2, 350 // 2))
     circle(screen, (244, 227, 215), (x + dx(330), y + dy(215)), int(50 / 2))
     line(screen, (0, 0, 0), (x + dx(285), y + dy(275)), (x + dx(140), y + dy(400)), 1)
@@ -30,6 +35,7 @@ def chuvak(x, y, orientacia):
     line(screen, (0, 0, 0), (x + dx(368), y + dy(550)), (x + dx(425), y + dy(700)), 1)
     line(screen, (0, 0, 0), (x + dx(210), y + dy(700)), (x + dx(130), y + dy(710)), 1)
     line(screen, (0, 0, 0), (x + dx(425), y + dy(700)), (x + dx(510), y + dy(710)), 1)
+
 
 def morozhka(x, y, orientacia, scale):
     """морожка чувака
@@ -43,14 +49,18 @@ def morozhka(x, y, orientacia, scale):
     else:
         koef_orientacii = -1
         ko = koef_orientacii
+
     def dy(y1):
-            return int((y1 - y0) * scale)
+        return int((y1 - y0) * scale)
+
     def dx(x1):
         return int(ko * (x1 - x0) * scale)
+
     polygon(screen, (255, 204, 0), [(x + dx(155), y + dy(415)), (x + dx(80), y + dy(380)), (x + dx(125), y + dy(335))])
     circle(screen, (85, 0, 0), (x + dx(90), y + dy(365)), int(r * scale))
     circle(screen, (255, 0, 0), (x + dx(110), y + dy(345)), int(r * scale))
-    circle(screen, (255, 255, 255), (x +dx(85), y + dy(340)), int(r * scale))
+    circle(screen, (255, 255, 255), (x + dx(85), y + dy(340)), int(r * scale))
+
 
 def chuviha(x, y, orientacia):
     """Чувиха
@@ -63,10 +73,13 @@ def chuviha(x, y, orientacia):
     else:
         koef_orientacii = -1
         ko = koef_orientacii
+
     def dy(y1):
         return int((y1 - y0) / 2)
+
     def dx(x1):
         return int(ko * (x1 - x0) / 2)
+
     polygon(screen, (255, 85, 221), [(x + dx(700), y + dy(215)),
                                      (x + dx(600), y + dy(580)), (x + dx(800), y + dy(580))])
     circle(screen, (244, 227, 215), (x + dx(700), y + dy(215)), int(50 / 2))
@@ -77,6 +90,7 @@ def chuviha(x, y, orientacia):
     line(screen, (0, 0, 0), (x + dx(730), y + dy(580)), (x + dx(730), y + dy(700)), 1)
     line(screen, (0, 0, 0), (x + dx(670), y + dy(700)), (x + dx(610), y + dy(700)), 1)
     line(screen, (0, 0, 0), (x + dx(730), y + dy(700)), (x + dx(790), y + dy(705)), 1)
+
 
 def sharik(x, y, orientacia):
     """Шарик чувихи
@@ -89,14 +103,18 @@ def sharik(x, y, orientacia):
     else:
         koef_orientacii = -1
         ko = koef_orientacii
+
     def dy(y1):
         return int((y1 - y0) / 1.5)
+
     def dx(x1):
         return int(ko * (x1 - x0) / 1.5)
+
     line(screen, (0, 0, 0), (x + dx(880), y + dy(300)), (x + dx(900), y + dy(150)), 1)
     polygon(screen, (255, 0, 0), [(x + dx(900), y + dy(155)), (x + dx(880), y + dy(65)), (x + dx(950), y + dy(80))])
     circle(screen, (255, 0, 0), (x + dx(935), y + dy(70)), int(21 / 1.5))
     circle(screen, (255, 0, 0), (x + dx(899), y + dy(60)), int(21 / 1.5))
+
 
 """Фон
 Небо, земля"""
@@ -108,7 +126,7 @@ chuvak(1032 - 240, 330, -1)
 chuviha(425, 330, 1)
 chuviha(1032 - 425, 330, -1)
 sharik(150, 430, -1)
-morozhka(885, 425, -1, 1/1.5)
+morozhka(885, 425, -1, 1 / 1.5)
 
 line(screen, (0, 0, 0), (507, 380), (560, 230), 1)
 morozhka(560, 230, 1, 1.5)
