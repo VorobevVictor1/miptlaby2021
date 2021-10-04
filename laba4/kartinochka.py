@@ -29,8 +29,8 @@ def chuvak(x, y, orientacia, scale):
         koef_orientacii = -1
         ko = koef_orientacii
 
-    ellipse(screen, (167, 147, 172), (x + dx(255, x0, ko, scale), y + dy(230, y0, scale), ko * 150 // 2, 350 // 2))
-    circle(screen, (244, 227, 215), (x + dx(330, x0, ko, scale), y + dy(215, y0, scale)), int(50 / 2))
+    ellipse(screen, (167, 147, 172), (x + dx(255, x0, ko, scale), y + dy(230, y0, scale), ko * 150 * scale, 350 * scale))
+    circle(screen, (244, 227, 215), (x + dx(330, x0, ko, scale), y + dy(215, y0, scale)), int(50 * scale))
     line(screen, (0, 0, 0), (x + dx(285, x0, ko, scale), y + dy(275, y0, scale)), (x + dx(140, x0, ko, scale),
                                                                                    y + dy(400, y0, scale)), 1)
     line(screen, (0, 0, 0), (x + dx(375, x0, ko, scale), y + dy(275, y0, scale)), (x + dx(500, x0, ko, scale),
@@ -81,7 +81,7 @@ def chuviha(x, y, orientacia, scale):
     polygon(screen, (255, 85, 221), [(x + dx(700, x0, ko, scale), y + dy(215, y0, scale)),
                                      (x + dx(600, x0, ko, scale), y + dy(580, y0, scale)),
                                      (x + dx(800, x0, ko, scale), y + dy(580, y0, scale))])
-    circle(screen, (244, 227, 215), (x + dx(700, x0, ko, scale), y + dy(215, y0, scale)), int(50 / 2))
+    circle(screen, (244, 227, 215), (x + dx(700, x0, ko, scale), y + dy(215, y0, scale)), int(50 * scale))
     line(screen, (0, 0, 0), (x + dx(685, x0, ko, scale), y + dy(275, y0, scale)), (x + dx(500, x0, ko, scale),
                                                                                    y + dy(400, y0, scale)), 1)
     line(screen, (0, 0, 0), (x + dx(715, x0, ko, scale), y + dy(275, y0, scale)),
@@ -117,8 +117,8 @@ def sharik(x, y, orientacia, scale):
              (x + dx(
                  950, x0, ko, scale), y + dy(
                  80, y0, scale))])
-    circle(screen, (255, 0, 0), (x + dx(935, x0, ko, scale), y + dy(70, y0, scale)), int(21 / 1.5))
-    circle(screen, (255, 0, 0), (x + dx(899, x0, ko, scale), y + dy(60, y0, scale)), int(21 / 1.5))
+    circle(screen, (255, 0, 0), (x + dx(935, x0, ko, scale), y + dy(70, y0, scale)), int(21 * scale))
+    circle(screen, (255, 0, 0), (x + dx(899, x0, ko, scale), y + dy(60, y0, scale)), int(21 * scale))
 
 
 """Фон
@@ -126,7 +126,7 @@ def sharik(x, y, orientacia, scale):
 rect(screen, (170, 238, 255), (0, 0, 1032, 384))
 rect(screen, (55, 200, 113), (0, 380, 1032, 384))
 
-chuvak(240, 330, 1, 0.5)
+chuvak(400, 330, 1, 1)
 chuvak(1032 - 240, 330, -1, 0.5)
 chuviha(425, 330, 1, 0.5)
 chuviha(1032 - 425, 330, -1, 0.5)
