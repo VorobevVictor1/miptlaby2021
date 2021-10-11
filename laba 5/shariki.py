@@ -1,6 +1,7 @@
+from random import randint, choice
+
 import pygame
 from pygame.draw import *
-from random import randint, choice
 
 FPS = 30
 WIDTH = 1000
@@ -10,9 +11,13 @@ Balls_rad_max = 35
 COLORS = [(255, 0, 255), (255, 255, 0)]
 balls_number = 10
 pool = list()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-class balls:
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.font.init()
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
+
+
+class Balls:
     def __init__(self):
         self.x = randint(Balls_rad_max + 1, WIDTH - Balls_rad_max - 1)
         self.y = randint(Balls_rad_max + 1, HEIGHT - Balls_rad_max - 1)
@@ -36,16 +41,19 @@ class balls:
 
     def point(self, x, y):
         if abs(self.x - x) <= self.r and abs(self.y - y) <= self.r:
-            print('+1')
             return 1
         else:
             return 0
+
 
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
 
+cooldown_pool = [(0, 0), 0]
 score = 0
+for i in range(balls_number):
+    pool.append(Balls())
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -54,15 +62,25 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             click_x = event.pos[0]
             click_y = event.pos[1]
-            for i in range(balls_number):
-                score += pool[i].point(click_x, click_y)
-
-    for i in range(balls_number):
-        pool.append(balls())
-        pool[i].draw(screen)
-        pool[i].move()
-        pool[i].collision()
+            for i, ball in enumerate(pool):
+                score += ball.point(click_x, click_y)
+                if ball.point(click_x, click_y) == 1:
+                    cooldown_pool[0] = event.pos
+                    cooldown_pool[1] = 10
+                    pool.pop(i)
+                    pool.append(Balls())
+    if cooldown_pool[1] > 0:
+        score_surface = myfont.render('+1', False, (255, 255, 255))
+        screen.blit(score_surface, cooldown_pool[0])
+        cooldown_pool[1] -= 1
+    for ball in pool:
+        ball.draw(screen)
+        ball.move()
+        ball.collision()
     pygame.display.update()
     screen.fill((0, 0, 0))
+    score_line = str(score)
+    total_score_surface = myfont.render('Score: ' + score_line, False, (255, 255, 255))
+    screen.blit(total_score_surface, (0, 0))
 print(score)
 pygame.quit()
