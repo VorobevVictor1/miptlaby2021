@@ -19,6 +19,7 @@ COLORS_SQUARES = [(123, 176, 50), (8, 190, 205)]
 balls_number = 10
 squares_number = balls_number // 2
 pool = list()
+LEADERBOARD_FILE = 'leaderboard.txt'
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.font.init()
@@ -81,6 +82,29 @@ class Squares:
         else:
             return 0
 
+def leaderboard_update(file=LEADERBOARD_FILE):
+    with open(file) as f:
+        scores = [[score, '', name, '-']]
+        for line in f:
+            if line == '':
+                break
+            else:
+                player_line = line.split()
+                player_line[3] = int(player_line[3])
+                player_line.insert(0, player_line[3])
+                player_line.pop()
+                scores.append(player_line)
+    with open(file, 'w') as f:
+        while len(scores) >= 11:
+            scores.pop(scores.index(min(scores)))
+        for i in range(len(scores)):
+            f.write(str(i + 1) + '. ' + max(scores)[2] + ' - ' + str(max(scores)[0]) + '\n')
+            scores.pop(scores.index(max(scores)))
+
+def screen_wipe(screen=screen):
+    rect(screen, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
+    pygame.display.update()
+
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
@@ -98,6 +122,11 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
+            break
+        elif event.type == pygame.KEYDOWN:
+            if pygame.key.name(event.key) == 'return':
+                finished = True
+                break
         elif event.type == pygame.MOUSEBUTTONDOWN:
             click_x = event.pos[0]
             click_y = event.pos[1]
@@ -126,23 +155,47 @@ while not finished:
     score_line = str(score)
     total_score_surface = myfont.render('Score: ' + score_line, False, (255, 255, 255))
     screen.blit(total_score_surface, (0, 0))
-pygame.quit()
 
-with open('leaderboard.txt') as file:
-    name = input('Write your name.\n')
-    scores = [[score, '', name, '-']]
-    for line in file:
-        if line == '':
+screen_wipe()
+
+name = ''
+while finished:
+    clock.tick(FPS)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = False
             break
-        else:
-            player_line = line.split()
-            player_line[3] = int(player_line[3])
-            player_line.insert(0, player_line[3])
-            player_line .pop()
-            scores.append(player_line)
-with open('leaderboard.txt', 'w') as file:
-    for i in range(len(scores)):
-        file.write(str(i+1) + '. ' + max(scores)[2] + ' - ' + str(max(scores)[0]) + '\n')
-        scores.pop(scores.index(max(scores)))
+        elif event.type == pygame.KEYDOWN:
+            if pygame.key.name(event.key) == 'return':
+                finished = False
+                break
+            name += pygame.key.name(event.key)
+            name_surf = myfont.render(name, False, (255, 255, 255))
+            screen.blit(name_surf, (0, 150))
+    name_insert_surf = myfont.render('Enter your name.', False, (255, 255, 255))
+    screen.blit(name_insert_surf, (0, 0))
+    pygame.display.update()
 
+leaderboard_update()
+screen_wipe()
+
+while not finished:
+    clock.tick(FPS)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            finished = True
+            break
+        elif event.type == pygame.KEYDOWN:
+            if pygame.key.name(event.key) == 'return':
+                finished = True
+                break
+    with open('leaderboard.txt') as f:
+        y = 0
+        for line in f:
+            line = line.replace('\n', '')
+            player_score_surface = myfont.render(line, False, (255, 255, 255))
+            screen.blit(player_score_surface, (0, y))
+            y += 80
+    pygame.display.update()
+pygame.quit()
 
