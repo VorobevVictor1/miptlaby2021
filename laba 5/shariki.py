@@ -130,16 +130,19 @@ pygame.quit()
 
 with open('leaderboard.txt') as file:
     name = input('Write your name.\n')
-    scores = [[score, name, '-']]
+    scores = [[score, '', name, '-']]
     for line in file:
-        player_line = line.split()
-        player_line[2] = int(player_line[2])
-        player_line.insert(0, player_line[2])
-        player_line.pop()
-        scores.append(player_line)
+        if line == '':
+            break
+        else:
+            player_line = line.split()
+            player_line[3] = int(player_line[3])
+            player_line.insert(0, player_line[3])
+            player_line .pop()
+            scores.append(player_line)
 with open('leaderboard.txt', 'w') as file:
     for i in range(len(scores)):
-        file.write(max(scores)[1] + ' - ' + str(max(scores)[0]) + '\n')
+        file.write(str(i+1) + '. ' + max(scores)[2] + ' - ' + str(max(scores)[0]) + '\n')
         scores.pop(scores.index(max(scores)))
 
 
