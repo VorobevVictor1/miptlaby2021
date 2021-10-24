@@ -381,3 +381,4 @@ if __name__ == '__main__':
     score_show(finished, clock, name, score)
 
     pygame.quit()
+
