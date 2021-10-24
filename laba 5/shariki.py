@@ -124,6 +124,16 @@ class Squares:
             return 0
 
 
+def screen_wipe(screen=screen):
+    '''
+    Очищает окно игры.
+    :param screen: очищаемая поверхность pygame.surface
+    :return: nothing
+    '''
+    rect(screen, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
+    pygame.display.update()
+
+#game screen_functions
 def pool_generator(pool=pool, b_number=balls_number, sq_number=squares_number):
     '''
     Генерит пул мишеней.
@@ -176,9 +186,116 @@ def hit_score_show(cooldown_pool):
         cooldown_pool[1] -= 1
 
 
+def gamescreen_update(score, pool=pool):
+    '''
+    Обновляет изображение на экране
+    :param score: int счет игрока.
+    :param pool: list с мишенями
+    :return: nothing
+    '''
+    for target in pool:
+        if isinstance(target, Balls):
+            target.draw(screen)
+            target.move()
+            target.collision()
+        else:
+            target.draw(screen)
+            target.move()
+    pygame.display.update()
+    screen.fill((0, 0, 0))
+    total_score_surface = myfont.render('Score: ' + str(score), False, (255, 255, 255))
+    screen.blit(total_score_surface, (0, 0))
+
+
+def play(finished, clock, pool, cooldown_pool, score,
+        b_number=balls_number, sq_number=squares_number, FPS=FPS, screen=screen):
+    '''
+    Функция отвечающая за сам процесс игры.
+    :param finished: Boolean отвечает за заферщение функции
+    :param clock: pygame.clock отвечает за внутриигровое время
+    :param pool: list список мишеней
+    :param cooldown_pool: list список, овтчеающий за отображение добавленных очков
+    :param score: int счет игрока
+    :param FPS: int количесвто кадров в секунду
+    :param b_number: int количество мишеней-кругов
+    :param sq_number: int количество мишеней-квадратов
+    :param screen: поверхность pygame.surface, на которой происходит отрисовка игры
+    :return: score --- количесвто очков, набранное игроком, finished --- обновленный параметр,
+                                                                отвечающий за завершение функции
+    '''
+    pool_generator()
+    while not finished:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+                finished = True
+                break
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                score += hit_check(event, cooldown_pool)
+        hit_score_show(cooldown_pool)
+        gamescreen_update(score)
+    return score, finished
+
+#name_screen functions
+def name_writer(name, event, screen=screen):
+    '''
+    Записывает имя пользователя.
+    :param name: str имя пользователя
+    :param event: событие pygame.event
+    :param screen: поверхность, где рисуется имя pygame.surface
+    :return:str обновленное имя name
+    '''
+    if pygame.key.name(event.key) == 'backspace':
+        name = name[0:len(name) - 1]
+        screen_wipe()
+    else:
+        name += pygame.key.name(event.key)
+    return name
+
+
+def namescreen_update(name):
+    '''
+    Обновляет экран записи имени игрока
+    :param name: str имя игрока
+    :return: nothing
+    '''
+    name_surf = myfont.render(name, False, (255, 255, 255))
+    screen.blit(name_surf, (0, 150))
+    name_insert_surf = myfont.render('Enter your name. Use only lowercase.', False, (255, 255, 255))
+    screen.blit(name_insert_surf, (0, 0))
+    pygame.display.update()
+
+
+def name_record(finished,clock, name, screen=screen, FPS=FPS):
+    '''
+    Функция, овтечающая за экран записи имени игрока.
+    :param finished: Boolean отвечает за заферщение функции
+    :param clock: pygame.clock отвечает за внутриигровое время
+    :param name: str имя игрока
+    :param screen: поверхность pygame.surface, на которой происходит отрисовка процесса набора имени.
+    :param FPS: int количесвто кадров в секунду
+    :return: str обновленную строку name с именем игрока, finished --- обновленный параметр,
+                                                                отвечающий за завершение функции
+    '''
+    while finished:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finished = False
+                break
+            elif event.type == pygame.KEYDOWN:
+                if pygame.key.name(event.key) == 'return':
+                    finished = False
+                    break
+                else:
+                    name = name_writer(name, event)
+        namescreen_update(name)
+    return name, finished
+
+#score_screen_functions
 def leaderboard_update(score, name, file=LEADERBOARD_FILE):
     '''
-    Обновляет табличцу лидеров.
+    Обновляет таблицу лидеров.
     :param score: int счет игрока
     :param name: str имя игрока
     :param file: txt файл, в котором записана таблица лидеров.
@@ -221,106 +338,46 @@ def leaderboard_writer(file=LEADERBOARD_FILE):
     pygame.display.update()
 
 
-def screen_wipe(screen=screen):
+def score_show(finished, clock, name, score, file=LEADERBOARD_FILE, screen=screen, FPS=FPS):
     '''
-    Очищает окно игры.
-    :param screen: очищаемая поверхность pygame.surface
-    :return: nothing
-    '''
-    rect(screen, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
-    pygame.display.update()
-
-
-def screen_update(score, pool=pool):
-    '''
-    Обновляет изображение на экране
-    :param score: int счет игрока.
-    :param pool: list с мишенями
-    :return: nothing
-    '''
-    for target in pool:
-        if isinstance(target, Balls):
-            target.draw(screen)
-            target.move()
-            target.collision()
-        else:
-            target.draw(screen)
-            target.move()
-    pygame.display.update()
-    screen.fill((0, 0, 0))
-    total_score_surface = myfont.render('Score: ' + str(score), False, (255, 255, 255))
-    screen.blit(total_score_surface, (0, 0))
-
-
-def play(finished, clock, pool, cooldown_pool, score, FPS=FPS, b_number=balls_number, sq_number=squares_number):
-    '''
-    Функция отвечающая за сам процесс игры.
+    Отвечает за отрисовку экрана с таблицей лидеров.
     :param finished: Boolean отвечает за заферщение функции
     :param clock: pygame.clock отвечает за внутриигровое время
-    :param pool: list список мишеней
-    :param cooldown_pool: list список, овтчеающий за отображение добавленных очков
+    :param name: str имя игрока
     :param score: int счет игрока
+    :param file: txt файл с таблицей лидеров
+    :param screen: поверхность pygame.surface, на которой происходит отрисовка процесса набора имени.
     :param FPS: int количесвто кадров в секунду
-    :param b_number: int количество мишеней-кругов
-    :param sq_number: int количество мишеней-квадратов
-    :return: score ---- количесвто очков, набранное игроком
+    :return: nothing
     '''
-    pool_generator()
+    leaderboard_update(score, name)
+
     while not finished:
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 finished = True
                 break
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                score += hit_check(event, cooldown_pool)
-        hit_score_show(cooldown_pool)
-        screen_update(score)
-    return score, finished
+        leaderboard_writer()
 
 
-pygame.display.update()
-clock = pygame.time.Clock()
-finished = False
-
-cooldown_pool = [(0, 0), 0, '']
-score = 0
-
-score, finished = play(finished, clock, pool, cooldown_pool, score)
-
-screen_wipe()
-
-name = ''
-while finished:
-    clock.tick(FPS)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            finished = False
-            break
-        elif event.type == pygame.KEYDOWN:
-            if pygame.key.name(event.key) == 'return':
-                finished = False
-                break
-            if pygame.key.name(event.key) == 'backspace':
-                name = name[0:len(name) - 1]
-                screen_wipe()
-            else:
-                name += pygame.key.name(event.key)
-    name_surf = myfont.render(name, False, (255, 255, 255))
-    screen.blit(name_surf, (0, 150))
-    name_insert_surf = myfont.render('Enter your name. Use only lowercase.', False, (255, 255, 255))
-    screen.blit(name_insert_surf, (0, 0))
+if __name__ == '__main__':
     pygame.display.update()
+    clock = pygame.time.Clock()
+    finished = False
 
-leaderboard_update(score, name)
-screen_wipe()
+    cooldown_pool = [(0, 0), 0, '']
+    score = 0
 
-while not finished:
-    clock.tick(FPS)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
-            finished = True
-            break
-    leaderboard_writer()
+    score, finished = play(finished, clock, pool, cooldown_pool, score)
 
-pygame.quit()
+    screen_wipe()
+
+    name = ''
+    name, finished = name_record(finished,clock, name)
+
+    screen_wipe()
+
+    score_show(finished, clock, name, score)
+
+    pygame.quit()
