@@ -9,23 +9,21 @@ HEIGHT = 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.font.init()
-myfont = pygame.font.SysFont('Comic Sans MS', 30)
+MYFONT = pygame.font.SysFont('Comic Sans MS', 30)
 
-balls_rad_min = 20
-balls_rad_max = 35
-balls_v_min = 5
-balls_v_max = 7
+BALLS_RAD_MIN = 20
+BALLS_RAD_MAX = 35
+BALLS_V_MIN = 5
+BALLS_V_MAX = 7
 COLORS_BALLS = [(255, 0, 255), (255, 255, 0)]
 
-squares_side_min = 2 * (balls_rad_min - 5)
-squares_side_max = 2 * (balls_rad_max - 10)
-squares_v_min = 8
-squares_v_max = 10
+SQUARES_SIDE_MIN = 2 * (BALLS_RAD_MIN - 5)
+SQUARES_SIDE_MAX = 2 * (BALLS_RAD_MAX - 10)
 COLORS_SQUARES = [(123, 176, 50), (8, 190, 205)]
 
-balls_number = 10
-squares_number = balls_number // 2
-pool = list()
+BALLS_NUMBER = 10
+SQUARES_NUMBER = BALLS_NUMBER // 2
+POOL = list()
 
 LEADERBOARD_FILE = 'leaderboard.txt'
 
@@ -36,11 +34,11 @@ class Balls:
         Создает мишень-круг: x,y --- координаты центра; v_x, v_y --- скорость по x и y; r --- радиус круга;
         color --- цвет мишени
         '''
-        self.x = randint(balls_rad_max + 1, WIDTH - balls_rad_max - 1)
-        self.y = randint(balls_rad_max + 1, HEIGHT - balls_rad_max - 1)
-        self.v_x = randint(balls_v_min, balls_v_max) * choice([-1, 1])
-        self.v_y = randint(balls_v_min, balls_v_max) * choice([-1, 1])
-        self.r = randint(balls_rad_min, balls_rad_max)
+        self.x = randint(BALLS_RAD_MAX + 1, WIDTH - BALLS_RAD_MAX - 1)
+        self.y = randint(BALLS_RAD_MAX + 1, HEIGHT - BALLS_RAD_MAX - 1)
+        self.v_x = randint(BALLS_V_MIN, BALLS_V_MAX) * choice([-1, 1])
+        self.v_y = randint(BALLS_V_MIN, BALLS_V_MAX) * choice([-1, 1])
+        self.r = randint(BALLS_RAD_MIN, BALLS_RAD_MAX)
         self.color = choice(COLORS_BALLS)
 
     def draw(self, surface):
@@ -88,9 +86,9 @@ class Squares:
         Создает мишень-квадрат: x,y --- координаты левого верхнего угла квадрата;
         s --- длина стороны квадрата;count --- счетчик времени положения квадрата на одном месте; color --- цвет мишени
         '''
-        self.x = randint(squares_side_max + 1, WIDTH - squares_side_max - 1)
-        self.y = randint(squares_side_max + 1, HEIGHT - squares_side_max - 1)
-        self.s = randint(squares_side_min, squares_side_max)
+        self.x = randint(SQUARES_SIDE_MAX + 1, WIDTH - SQUARES_SIDE_MAX - 1)
+        self.y = randint(SQUARES_SIDE_MAX + 1, HEIGHT - SQUARES_SIDE_MAX - 1)
+        self.s = randint(SQUARES_SIDE_MIN, SQUARES_SIDE_MAX)
         self.color = choice(COLORS_SQUARES)
         self.count = int(1.5 * FPS)
 
@@ -108,8 +106,8 @@ class Squares:
         '''
         self.count -= 1
         if self.count == 0:
-            self.x = randint(squares_side_max + 1, WIDTH - squares_side_max - 1)
-            self.y = randint(squares_side_max + 1, HEIGHT - squares_side_max - 1)
+            self.x = randint(SQUARES_SIDE_MAX + 1, WIDTH - SQUARES_SIDE_MAX - 1)
+            self.y = randint(SQUARES_SIDE_MAX + 1, HEIGHT - SQUARES_SIDE_MAX - 1)
             self.count = int(1.5 * FPS)
 
     def hit(self, event):
@@ -134,7 +132,7 @@ def screen_wipe(screen=screen):
     pygame.display.update()
 
 #game screen_functions
-def pool_generator(pool=pool, b_number=balls_number, sq_number=squares_number):
+def pool_generator(pool=POOL, b_number=BALLS_NUMBER, sq_number=SQUARES_NUMBER):
     '''
     Генерит пул мишеней.
     :param pool: list, в котором хранятся мишени
@@ -149,9 +147,9 @@ def pool_generator(pool=pool, b_number=balls_number, sq_number=squares_number):
             pool.append(Squares())
 
 
-def hit_check(event, cooldown_pool, pool=pool):
+def hit_check(event, cooldown_pool, pool=POOL):
     '''
-    Проверяет все мишени из pool на попадание по ним кликом мышки pygame.event.
+    Проверяет все мишени из POOL на попадание по ним кликом мышки pygame.event.
     При попадании увиличивает score на необходимое число очков, обновляет list cooldown_pool.
     :param event: событие pygame.event
     :param cooldown_pool: list список, овтчеающий за отображение добавленных очков
@@ -181,12 +179,12 @@ def hit_score_show(cooldown_pool):
     :return: nothing
     '''
     if cooldown_pool[1] > 0:
-        score_surface = myfont.render('+' + cooldown_pool[2], False, (255, 255, 255))
+        score_surface = MYFONT.render('+' + cooldown_pool[2], False, (255, 255, 255))
         screen.blit(score_surface, cooldown_pool[0])
         cooldown_pool[1] -= 1
 
 
-def gamescreen_update(score, pool=pool):
+def gamescreen_update(score, pool=POOL):
     '''
     Обновляет изображение на экране
     :param score: int счет игрока.
@@ -203,12 +201,12 @@ def gamescreen_update(score, pool=pool):
             target.move()
     pygame.display.update()
     screen.fill((0, 0, 0))
-    total_score_surface = myfont.render('Score: ' + str(score), False, (255, 255, 255))
+    total_score_surface = MYFONT.render('Score: ' + str(score), False, (255, 255, 255))
     screen.blit(total_score_surface, (0, 0))
 
 
 def play(finished, clock, pool, cooldown_pool, score,
-        b_number=balls_number, sq_number=squares_number, FPS=FPS, screen=screen):
+         b_number=BALLS_NUMBER, sq_number=SQUARES_NUMBER, FPS=FPS, screen=screen):
     '''
     Функция отвечающая за сам процесс игры.
     :param finished: Boolean отвечает за заферщение функции
@@ -259,9 +257,9 @@ def namescreen_update(name):
     :param name: str имя игрока
     :return: nothing
     '''
-    name_surf = myfont.render(name, False, (255, 255, 255))
+    name_surf = MYFONT.render(name, False, (255, 255, 255))
     screen.blit(name_surf, (0, 150))
-    name_insert_surf = myfont.render('Enter your name. Use only lowercase.', False, (255, 255, 255))
+    name_insert_surf = MYFONT.render('Enter your name. Use only lowercase.', False, (255, 255, 255))
     screen.blit(name_insert_surf, (0, 0))
     pygame.display.update()
 
@@ -332,7 +330,7 @@ def leaderboard_writer(file=LEADERBOARD_FILE):
         y = 0
         for line in f:
             line = line.replace('\n', '')
-            player_score_surface = myfont.render(line, False, (255, 255, 255))
+            player_score_surface = MYFONT.render(line, False, (255, 255, 255))
             screen.blit(player_score_surface, (0, y))
             y += 80
     pygame.display.update()
@@ -369,7 +367,7 @@ if __name__ == '__main__':
     cooldown_pool = [(0, 0), 0, '']
     score = 0
 
-    score, finished = play(finished, clock, pool, cooldown_pool, score)
+    score, finished = play(finished, clock, POOL, cooldown_pool, score)
 
     screen_wipe()
 
