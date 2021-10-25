@@ -6,7 +6,7 @@ from pygame.draw import *
 FPS = 15
 WIDTH = 1000
 HEIGHT = 800
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.font.init()
 MYFONT = pygame.font.SysFont('Comic Sans MS', 30)
@@ -122,7 +122,7 @@ class Squares:
             return 0
 
 
-def screen_wipe(screen=screen):
+def screen_wipe(screen=SCREEN):
     '''
     Очищает окно игры.
     :param screen: очищаемая поверхность pygame.surface
@@ -180,7 +180,7 @@ def hit_score_show(cooldown_pool):
     '''
     if cooldown_pool[1] > 0:
         score_surface = MYFONT.render('+' + cooldown_pool[2], False, (255, 255, 255))
-        screen.blit(score_surface, cooldown_pool[0])
+        SCREEN.blit(score_surface, cooldown_pool[0])
         cooldown_pool[1] -= 1
 
 
@@ -193,20 +193,20 @@ def gamescreen_update(score, pool=POOL):
     '''
     for target in pool:
         if isinstance(target, Balls):
-            target.draw(screen)
+            target.draw(SCREEN)
             target.move()
             target.collision()
         else:
-            target.draw(screen)
+            target.draw(SCREEN)
             target.move()
     pygame.display.update()
-    screen.fill((0, 0, 0))
+    SCREEN.fill((0, 0, 0))
     total_score_surface = MYFONT.render('Score: ' + str(score), False, (255, 255, 255))
-    screen.blit(total_score_surface, (0, 0))
+    SCREEN.blit(total_score_surface, (0, 0))
 
 
 def play(finished, clock, pool, cooldown_pool, score,
-         b_number=BALLS_NUMBER, sq_number=SQUARES_NUMBER, FPS=FPS, screen=screen):
+         b_number=BALLS_NUMBER, sq_number=SQUARES_NUMBER, FPS=FPS, screen=SCREEN):
     '''
     Функция отвечающая за сам процесс игры.
     :param finished: Boolean отвечает за заферщение функции
@@ -235,7 +235,7 @@ def play(finished, clock, pool, cooldown_pool, score,
     return score, finished
 
 #name_screen functions
-def name_writer(name, event, screen=screen):
+def name_writer(name, event, screen=SCREEN):
     '''
     Записывает имя пользователя.
     :param name: str имя пользователя
@@ -258,13 +258,13 @@ def namescreen_update(name):
     :return: nothing
     '''
     name_surf = MYFONT.render(name, False, (255, 255, 255))
-    screen.blit(name_surf, (0, 150))
+    SCREEN.blit(name_surf, (0, 150))
     name_insert_surf = MYFONT.render('Enter your name. Use only lowercase.', False, (255, 255, 255))
-    screen.blit(name_insert_surf, (0, 0))
+    SCREEN.blit(name_insert_surf, (0, 0))
     pygame.display.update()
 
 
-def name_record(finished,clock, name, screen=screen, FPS=FPS):
+def name_record(finished, clock, name, screen=SCREEN, FPS=FPS):
     '''
     Функция, овтечающая за экран записи имени игрока.
     :param finished: Boolean отвечает за заферщение функции
@@ -331,12 +331,12 @@ def leaderboard_writer(file=LEADERBOARD_FILE):
         for line in f:
             line = line.replace('\n', '')
             player_score_surface = MYFONT.render(line, False, (255, 255, 255))
-            screen.blit(player_score_surface, (0, y))
+            SCREEN.blit(player_score_surface, (0, y))
             y += 80
     pygame.display.update()
 
 
-def score_show(finished, clock, name, score, file=LEADERBOARD_FILE, screen=screen, FPS=FPS):
+def score_show(finished, clock, name, score, file=LEADERBOARD_FILE, screen=SCREEN, FPS=FPS):
     '''
     Отвечает за отрисовку экрана с таблицей лидеров.
     :param finished: Boolean отвечает за заферщение функции
