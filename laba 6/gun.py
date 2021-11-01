@@ -2,9 +2,10 @@ import math
 from random import choice, randint
 
 import pygame
+from pygame.draw import *
 
 
-FPS = 30
+FPS = 60
 
 RED = 0xFF0000
 BLUE = 0x0000FF
@@ -18,11 +19,12 @@ GREY = 0x7D7D7D
 GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 WIDTH = 800
-HEIGHT = 800
+HEIGHT = 600
+G = 9.81
 
 
 class Ball:
-    def __init__(self, screen: pygame.Surface, x=0, y=800):
+    def __init__(self, power,  event: pygame.event, screen: pygame.Surface, x=20, y=450):
         """ Конструктор класса ball
 
         Args:
@@ -32,9 +34,10 @@ class Ball:
         self.screen = screen
         self.x = x
         self.y = y
-        self.r = 10
-        self.vx = 600
-        self.vy = 700
+        self.r = 15
+        self.angle = math.atan2((event.pos[1] - self.y), (event.pos[0] - self.x))
+        self.vx = 3 * power * math.cos(self.angle)
+        self.vy = 4 * power * math.sin(self.angle)
         self.color = choice(GAME_COLORS)
         self.live = 30
         self.t = 0
@@ -45,32 +48,37 @@ class Ball:
         self.x и self.y с учетом скоростей self.vx и self.vy, силы гравитации, действующей на мяч,
         и стен по краям окна (размер окна 800х600).
         """
-        # FIXME
-        self.x += self.vx / FPS
-        self.y += -self.vy / FPS + 600 * (2 * self.t / FPS + 1 / FPS ** 2)
-        self.t += 1 / FPS
+        self.x += self.vx * 0.1
+        self.y += self.vy * 0.1 + G * (2 * self.t + 0.01) / 2
+        self.t += 0.1
+        if self.x <= self.r or WIDTH <= self.x + self.r:
+            self.vx *= -1
+        if self.y <= self.r:
+            self.vy *= -1
 
     def draw(self):
         pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.r)
 
-    def hit_test(self, obj):
+    def hit_test(self, target):
         """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
 
         Args:
-            obj: Обьект, с которым проверяется столкновение.
+            target: Обьект, с которым проверяется столкновение.
         Returns:
             Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.
         """
-        # FIXME
-        return False
+        if (target.x - self.x) ** 2 + (target.y - self.y) ** 2 <= (target.r + self.r) ** 2:
+            return True
+        else:
+            return False
 
 
 class Gun:
     def __init__(self, screen):
         self.screen = screen
-        self.f2_power = 600
+        self.f2_power = 0
         self.f2_on = 0
-        self.an = 1
+        self.angle = 1
         self.color = GREY
 
     def fire2_start(self, event):
@@ -84,55 +92,46 @@ class Gun:
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.screen)
-        new_ball.r += 5
-        self.an = math.atan2((event.pos[1]-new_ball.y), (event.pos[0]-new_ball.x))
-        new_ball.vx = self.f2_power * math.cos(self.an)
-        new_ball.vy = - self.f2_power * math.sin(self.an)
+        new_ball = Ball(self.f2_power, event, screen)
         balls.append(new_ball)
         self.f2_on = 0
-        self.f2_power = 1000
+        self.f2_power = 0
 
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
-        if event:
-            self.an = math.atan((event.pos[1]-450) / (event.pos[0]-20))
-        if self.f2_on:
-            self.color = RED
+        if event and not event.pos[0] == 20:
+            self.angle = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
         else:
-            self.color = GREY
+            self.angle = math.atan((event.pos[1] - 450) / 0.0000001)
 
     def draw(self):
-        # FIXIT don't know how to do it
-        pass
+        circle(screen, self.color, (20, 450), self.f2_power // 2)
+
     def power_up(self):
         if self.f2_on:
-            if self.f2_power < 100:
-                self.f2_power += 1
-            self.color = RED
+            if self.f2_power < 75:
+                self.f2_power += 3
+                self.color = BLACK
+            elif 75 <= self.f2_power < 150:
+                self.f2_power += 2
+                self.color = BLACK
+            else:
+                self.color = RED
         else:
             self.color = GREY
 
 
 class Target:
-    # self.points = 0
-    # self.live = 1
-    # FIXME: don't work!!! How to call this functions when object is created?
-    # self.new_target()
-
-    def new_target(self):
-        """ Инициализация новой цели. """
-        x = self.x = randint(600, 780)
-        y = self.y = randint(300, 550)
-        r = self.r = randint(2, 50)
-        color = self.color = RED
-
-    def hit(self, points=1):
-        """Попадание шарика в цель."""
-        self.points += points
+    def __init__(self):
+        self.points = 0
+        self.live = 1
+        self.x = randint(300, 780)
+        self.y = randint(150, 450)
+        self.r = randint(2, 50)
+        self.color = RED
 
     def draw(self):
-        ...
+        circle(screen, self.color, (self.x, self.y), self.r)
 
 
 pygame.init()
@@ -146,13 +145,6 @@ target = Target()
 finished = False
 
 while not finished:
-    screen.fill(WHITE)
-    gun.draw()
-    target.draw()
-    for b in balls:
-        b.draw()
-    pygame.display.update()
-
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -164,12 +156,19 @@ while not finished:
         elif event.type == pygame.MOUSEMOTION:
             gun.targetting(event)
 
+    screen.fill(WHITE)
+    gun.draw()
+    target.draw()
+    for b in balls:
+        b.draw()
+        b.hit_test(target)
+    pygame.display.update()
+
     for b in balls:
         b.move()
         if b.hit_test(target) and target.live:
             target.live = 0
-            target.hit()
-            target.new_target()
+            target = Target()
     gun.power_up()
 
 pygame.quit()
