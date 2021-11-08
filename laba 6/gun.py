@@ -101,16 +101,20 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event and not event.pos[0] == 20:
-            self.angle = math.atan((event.pos[1] - GUN_POSITION_Y) / (event.pos[0] - GUN_POSITION_X))
-        else:
-            self.angle = math.atan((event.pos[1] - 450) / 0.0000001)
+            self.angle = math.atan2((event.pos[1] - GUN_POSITION_Y), (event.pos[0] - GUN_POSITION_X))
 
     def draw(self):
         self.surface.fill(WHITE)
         new_surface = self.surface
-        rect(new_surface, self.color, (2, 2, 20 + self.f2_power // 2, 10))
-        new_surface = pygame.transform.rotate(new_surface, -self.angle * 180 / math.pi)
-        screen.blit(new_surface, (GUN_POSITION_X, GUN_POSITION_Y))
+        if self.angle > 0:
+            rect(new_surface, self.color, (2, 2, 20 + self.f2_power // 2, 10))
+            new_surface = pygame.transform.rotate(new_surface, -self.angle * 180 / math.pi)
+            screen.blit(new_surface, (GUN_POSITION_X, GUN_POSITION_Y))
+        else:
+            rect(new_surface, self.color, (2, 2, 20 + self.f2_power // 2, 10))
+            new_surface = pygame.transform.rotate(new_surface, -self.angle * 180 / math.pi)
+            screen.blit(new_surface, (GUN_POSITION_X,
+                                      int(GUN_POSITION_Y + 120 * math.sin(self.angle)) + 5 * math.cos(self.angle)))
 
 
 
