@@ -131,7 +131,8 @@ def screen_wipe(screen=SCREEN):
     rect(screen, (0, 0, 0), (0, 0, WIDTH, HEIGHT))
     pygame.display.update()
 
-#game screen_functions
+
+# game screen_functions
 def pool_generator(pool=POOL, b_number=BALLS_NUMBER, sq_number=SQUARES_NUMBER):
     '''
     Генерит пул мишеней.
@@ -234,7 +235,8 @@ def play(finished, clock, pool, cooldown_pool, score,
         gamescreen_update(score)
     return score, finished
 
-#name_screen functions
+
+# name_screen functions
 def name_writer(name, event, screen=SCREEN):
     '''
     Записывает имя пользователя.
@@ -290,7 +292,8 @@ def name_record(finished, clock, name, screen=SCREEN, FPS=FPS):
         namescreen_update(name)
     return name, finished
 
-#score_screen_functions
+
+# score_screen_functions
 def leaderboard_update(score, name, file=LEADERBOARD_FILE):
     '''
     Обновляет таблицу лидеров.
@@ -372,11 +375,10 @@ if __name__ == '__main__':
     screen_wipe()
 
     name = ''
-    name, finished = name_record(finished,clock, name)
+    name, finished = name_record(finished, clock, name)
 
     screen_wipe()
 
     score_show(finished, clock, name, score)
 
     pygame.quit()
-

@@ -5,7 +5,7 @@ import pygame
 from pygame.draw import *
 
 
-FPS = 60
+FPS = 120
 
 RED = 0xFF0000
 BLUE = 0x0000FF
@@ -22,9 +22,12 @@ WIDTH = 800
 HEIGHT = 600
 G = 9.81
 
+GUN_POSITION_X = 20
+GUN_POSITION_Y = 450
+
 
 class Ball:
-    def __init__(self, power,  event: pygame.event, screen: pygame.Surface, x=20, y=450):
+    def __init__(self, power,  angle, screen: pygame.Surface, x=GUN_POSITION_X, y=GUN_POSITION_Y):
         """ Конструктор класса ball
 
         Args:
@@ -35,12 +38,10 @@ class Ball:
         self.x = x
         self.y = y
         self.r = 15
-        self.angle = math.atan2((event.pos[1] - self.y), (event.pos[0] - self.x))
-        self.vx = 3 * power * math.cos(self.angle)
-        self.vy = 4 * power * math.sin(self.angle)
+        self.vx = 0.9 * power * math.cos(angle)
+        self.vy = power * math.sin(angle)
         self.color = choice(GAME_COLORS)
         self.live = 30
-        self.t = 0
 
     def move(self):
         """Переместить мяч по прошествии единицы времени.
@@ -49,8 +50,8 @@ class Ball:
         и стен по краям окна (размер окна 800х600).
         """
         self.x += self.vx * 0.1
-        self.y += self.vy * 0.1 + G * (2 * self.t + 0.01) / 2
-        self.t += 0.1
+        self.y += self.vy * 0.1
+        self.vy += G * 0.1
         if self.x <= self.r or WIDTH <= self.x + self.r:
             self.vx *= -1
         if self.y <= self.r:
@@ -74,8 +75,8 @@ class Ball:
 
 
 class Gun:
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self):
+        self.surface = pygame.Surface((120, 10))
         self.f2_power = 0
         self.f2_on = 0
         self.angle = 1
@@ -92,7 +93,7 @@ class Gun:
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.f2_power, event, screen)
+        new_ball = Ball(self.f2_power, self.angle, screen)
         balls.append(new_ball)
         self.f2_on = 0
         self.f2_power = 0
@@ -100,12 +101,18 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event and not event.pos[0] == 20:
-            self.angle = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
+            self.angle = math.atan((event.pos[1] - GUN_POSITION_Y) / (event.pos[0] - GUN_POSITION_X))
         else:
             self.angle = math.atan((event.pos[1] - 450) / 0.0000001)
 
     def draw(self):
-        circle(screen, self.color, (20, 450), self.f2_power // 2)
+        self.surface.fill(WHITE)
+        new_surface = self.surface
+        rect(new_surface, self.color, (2, 2, 20 + self.f2_power // 2, 10))
+        new_surface = pygame.transform.rotate(new_surface, -self.angle * 180 / math.pi)
+        screen.blit(new_surface, (GUN_POSITION_X, GUN_POSITION_Y))
+
+
 
     def power_up(self):
         if self.f2_on:
@@ -140,7 +147,7 @@ bullet = 0
 balls = []
 
 clock = pygame.time.Clock()
-gun = Gun(screen)
+gun = Gun()
 target = Target()
 finished = False
 
