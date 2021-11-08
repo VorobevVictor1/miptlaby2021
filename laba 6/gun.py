@@ -5,7 +5,7 @@ import pygame
 from pygame.draw import *
 
 
-FPS = 100
+FPS = 120
 
 RED = 0xFF0000
 BLUE = 0x0000FF
